@@ -1,0 +1,54 @@
+<div id='board'>
+  <div class='row'>
+    <div id='square_0_0' class='square' data-row='0' data-column='0'></div>
+    <div id='square_1_0' class='square' data-row='0' data-column='1'></div>
+    <div id='square_2_0' class='square' data-row='0' data-column='2'></div>
+  </div>
+  <div class='row'>
+    <div id='square_0_1' class='square' data-row='1' data-column='0'></div>
+    <div id='square_1_1' class='square' data-row='1' data-column='1'></div>
+    <div id='square_2_1' class='square' data-row='1' data-column='2'></div>
+  </div>
+  <div class='row'>
+    <div id='square_0_2' class='square' data-row='2' data-column='0'></div>
+    <div id='square_1_2' class='square' data-row='2' data-column='1'></div>
+    <div id='square_2_2' class='square' data-row='2' data-column='2'></div>
+  </div>
+</div>
+
+<script>
+  var board = [
+    [null, null, null],
+    [null, null, null],
+    [null, null, null]
+             ];
+  $('.square').on('click', function(obj) {
+    var row = $(obj.target).data('row');
+    var col = $(obj.target).data('column');
+
+    $.ajax({
+      method: 'POST',
+      url: '/move',
+      data: { move: { row: row, column: col, board: JSON.stringify(board) } }
+    }).done(function(response) {
+      console.log(response);
+      board = response.move.board
+      updateBoard();
+      if (response.move.winner) {
+        displayWinner(response.move.winner)
+      }
+    });
+
+    var updateBoard = function() {
+      for (var row = 0; row < 3; row++) {
+        for (var column = 0; column < 3; column++) {
+          $(`div[data-row=${row}][data-column=${column}]`).html(board[row][column]);
+        }
+      }
+    }
+
+    var displayWinner = function(winner) {
+      alert(`The winner was ${winner}`);
+    }
+  });
+</script>
